@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JC ARENA - The Future of Drone Entertainment</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Orbitron for headers, Inter for body -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- AOS (Animate on Scroll) Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-blue: #00aaff;
+            --primary-purple: #a855f7;
+            --dark-bg: #050510;
+            --light-bg: #0a0a1a;
+        }
+        body {
+            background-color: var(--dark-bg);
+            color: #e0e0e0;
+            font-family: 'Inter', sans-serif;
+        }
+        .font-orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+        .neon-text {
+            text-shadow: 0 0 5px var(--primary-blue), 0 0 10px var(--primary-blue), 0 0 20px var(--primary-blue), 0 0 40px var(--primary-blue);
+        }
+        .neon-border {
+            border: 2px solid;
+            border-image: linear-gradient(to right, var(--primary-blue), var(--primary-purple)) 1;
+            box-shadow: 0 0 15px rgba(0, 170, 255, 0.5), 0 0 15px rgba(168, 85, 247, 0.5);
+        }
+        .glass-effect {
+            background: rgba(10, 10, 30, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* --- HERO SCROLL & GAP FIX --- */
+        .hero-section-wrapper {
+            height: 200vh; /* Provides scroll space for the effect */
+        }
+        .hero-sticky-container {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .hero-background {
+            background-image: url('https://i.ibb.co/m5Yr1qBf/Picsart-25-08-04-18-07-34-774.png');
+            background-size: contain;
+            background-position: center center;
+            background-repeat: no-repeat;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1;
+            background-color: var(--dark-bg);
+            opacity: 1; /* Start with image visible */
+        }
+        .hero-content-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 2; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Semi-transparent overlay so the image is visible behind the text */
+            background: radial-gradient(ellipse at center, rgba(5, 5, 16, 0.8) 0%, rgba(5, 5, 16, 1) 70%);
+        }
+        /* --- END HERO FIX --- */
+
+        #jc-sphere-video-container {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 170, 255, 0.4);
+        }
+        #jc-sphere-video-embed {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+        }
+        
+        .spec-box {
+            background: linear-gradient(145deg, rgba(10, 10, 30, 0.5), rgba(20, 20, 40, 0.5));
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 170, 255, 0.2);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .spec-box:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 170, 255, 0.5);
+        }
+        .spec-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -80%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(0, 170, 255, 0.15), transparent);
+            transform: skewX(-25deg);
+            transition: left 0.6s ease;
+        }
+        .spec-box:hover::before {
+            left: 120%;
+        }
+        .section-heading {
+            text-shadow: 0 0 8px rgba(0, 170, 255, 0.5);
+        }
+        
+        /* Arena Slideshow Styles */
+        .slideshow-container {
+            position: relative;
+            width: 100%;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        .slideshow-container .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 1.5s ease-in-out; /* Slow fade */
+            opacity: 0;
+        }
+        .slideshow-container .slide.active {
+            opacity: 1;
+        }
+        .arena-slideshow-container {
+             padding-top: 66.66%; /* 3:2 Aspect Ratio */
+        }
+        .racing-slideshow-container {
+             padding-top: 56.25%; /* 16:9 Aspect Ratio */
+        }
+        .slideshow-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            cursor: pointer;
+            z-index: 10;
+            border-radius: 50%;
+            transition: background-color 0.3s ease;
+        }
+        .slideshow-btn:hover {
+            background-color: rgba(0, 170, 255, 0.7);
+        }
+        .prev-btn { left: 1rem; }
+        .next-btn { right: 1rem; }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+
+    <!-- Header -->
+    <header id="header" class="fixed top-0 left-0 right-0 z-50 transition-colors duration-300">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-3xl font-orbitron font-bold neon-text">JC ARENA</a>
+            <div class="hidden md:flex space-x-8 items-center">
+                <a href="#vision" class="hover:text-[var(--primary-blue)] transition duration-300">About</a>
+                <a href="#jc-sphere" class="hover:text-[var(--primary-blue)] transition duration-300">JC Sphere</a>
+                <a href="#arenas" class="hover:text-[var(--primary-blue)] transition duration-300">Arenas</a>
+                <a href="#games" class="hover:text-[var(--primary-blue)] transition duration-300">Games</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg></button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden glass-effect">
+            <a href="#vision" class="block py-2 px-4 text-sm hover:bg-gray-700">About</a>
+            <a href="#jc-sphere" class="block py-2 px-4 text-sm hover:bg-gray-700">JC Sphere</a>
+            <a href="#arenas" class="block py-2 px-4 text-sm hover:bg-gray-700">Arenas</a>
+            <a href="#games" class="block py-2 px-4 text-sm hover:bg-gray-700">Games</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <div class="hero-section-wrapper">
+        <div class="hero-sticky-container">
+            <div class="hero-background"></div>
+            <div class="hero-content-overlay text-center">
+                <div class="relative z-10 px-4">
+                    <h1 class="text-4xl sm:text-5xl md:text-7xl font-orbitron font-black uppercase neon-text" data-aos="fade-down">The Future of Drone Entertainment</h1>
+                    <p class="mt-6 text-lg md:text-xl max-w-3xl mx-auto text-gray-300" data-aos="fade-up" data-aos-delay="200">JC Arena is a pioneering venture poised to redefine interactive, technology-driven entertainment through a one-stop hub for drone games, learning, and tech play.</p>
+                    <a href="#vision" class="mt-10 inline-block bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-4 px-10 rounded-full text-lg transition duration-300 transform hover:scale-105" data-aos="zoom-in" data-aos-delay="400">Discover The Vision</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main class="relative z-10 bg-dark-bg"> <!-- Wrapper for the rest of the content -->
+        <!-- About/Vision Section -->
+        <section id="vision" class="py-20 md:py-32">
+            <div class="container mx-auto px-6">
+                <div class="text-center max-w-4xl mx-auto">
+                    <h2 class="text-4xl md:text-5xl font-orbitron font-bold mb-6 section-heading" data-aos="fade-up">A New Era of Immersive Experience</h2>
+                    <p class="text-lg text-gray-400" data-aos="fade-up" data-aos-delay="200">JC Arena capitalizes on the expanding drone industry by providing a safe, dedicated, and technologically advanced venue for everyone from families and tech enthusiasts to schools and corporate clients.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- JC Sphere Section -->
+        <section id="jc-sphere" class="py-20 md:py-32 bg-light-bg">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                     <h2 class="text-4xl md:text-5xl font-orbitron font-bold section-heading" data-aos="fade-up">The <span class="text-blue-400">JC Sphere</span></h2>
+                </div>
+                <div class="grid md:grid-cols-2 gap-12 items-center mb-24">
+                    <div data-aos="fade-right">
+                        <h3 class="text-3xl font-orbitron text-fuchsia-400 mb-4">JC Sphere in Action</h3>
+                        <p class="text-lg text-gray-300 mb-6">Experience the unparalleled agility and performance of the JC Sphere, engineered for the ultimate indoor flight experience.</p>
+                    </div>
+                    <div class="relative" data-aos="fade-left">
+                        <div id="jc-sphere-video-container">
+                            <iframe id="jc-sphere-video-embed"
+                                src="https://www.youtube.com/embed/f4xkTaztflA?autoplay=1&loop=1&mute=1&playlist=f4xkTaztflA&controls=0&showinfo=0&autohide=1&modestbranding=1&rel=0"
+                                frame-border="0"
+                                allow="autoplay; encrypted-media"
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                     <div class="relative" data-aos="fade-right">
+                        <img src="https://i.ibb.co/Fb5dqJBp/Picsart-25-08-02-03-13-12-372.png" alt="JC Sphere Features" class="w-full h-auto max-h-full object-contain rounded-lg">
+                    </div>
+                    <div id="sphere-text-content" class="space-y-4" data-aos="fade-left">
+                        <div class="spec-box">
+                            <h4 class="font-orbitron font-bold text-lg text-blue-300">Omni-Directional Propulsion</h4>
+                            <p class="text-sm text-gray-400 mt-1">Advanced octa-propulsion system for unparalleled 360-degree agility.</p>
+                        </div>
+                        <div class="spec-box">
+                            <h4 class="font-orbitron font-bold text-lg text-blue-300">Collision-Safe Armor</h4>
+                            <p class="text-sm text-gray-400 mt-1">Robust, lightweight aero poly-carbon spiral armor for intense indoor action.</p>
+                        </div>
+                        <div class="spec-box">
+                            <h4 class="font-orbitron font-bold text-lg text-blue-300">360° Hyperspectral Camera</h4>
+                            <p class="text-sm text-gray-400 mt-1">Integrated AR/VR compatible cameras for stunning first-person views.</p>
+                        </div>
+                        <div class="spec-box">
+                            <h4 class="font-orbitron font-bold text-lg text-blue-300">Quick-Swap Power Cells</h4>
+                            <p class="text-sm text-gray-400 mt-1">Modular batteries for minimal downtime and non-stop action.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Arenas Section -->
+        <section id="arenas" class="py-20 md:py-32">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl md:text-5xl font-orbitron font-bold text-center mb-12 section-heading" data-aos="fade-up">World-Class <span class="neon-text">Venues</span></h2>
+                <div class="grid lg:grid-cols-2 gap-10 items-start">
+                    <div class="glass-effect p-6 rounded-2xl" data-aos="fade-left" data-aos-delay="200">
+                        <h3 class="text-3xl font-orbitron text-blue-400 mb-4 section-heading">Mega Flagship Arena</h3>
+                        <div class="slideshow-container arena-slideshow-container mb-4 shadow-lg shadow-blue-500/20">
+                            <img src="https://i.ibb.co/5xYQ36dw/Picsart-25-08-02-03-18-08-956.jpg" alt="Mega Flagship Arena Image 1" class="slide active">
+                            <img src="https://i.ibb.co/QvMYhyvQ/Picsart-25-08-02-01-59-13-992.png" alt="Mega Flagship Arena Image 2" class="slide">
+                            <img src="https://i.ibb.co/99m36vmB/Picsart-25-08-02-01-56-32-009.png" alt="Mega Flagship Arena Image 3" class="slide">
+                            <button class="slideshow-btn prev-btn" onclick="plusSlides(-1, 'mega')">&#10094;</button>
+                            <button class="slideshow-btn next-btn" onclick="plusSlides(1, 'mega')">&#10095;</button>
+                        </div>
+                        <p class="text-gray-300">A monumental, 400,000 sq. ft. multi-story complex. A true destination featuring multiple arenas, expansive simulation zones, and a live e-sports broadcast hub.</p>
+                    </div>
+                    <div class="glass-effect p-6 rounded-2xl" data-aos="fade-right">
+                        <h3 class="text-3xl font-orbitron text-fuchsia-400 mb-4 section-heading">Flagship Arena</h3>
+                        <img src="https://i.ibb.co/4qkK1w3/Picsart-25-08-02-01-52-35-955.png" alt="Flagship Arena Layout" class="w-full rounded-lg mb-4 shadow-lg shadow-fuchsia-500/20">
+                        <p class="text-gray-300">Ideal for high-traffic urban locations, our 10,000 sq. ft. Flagship Arena is a hub of excitement, featuring main flight courts, VIP pods, and AR/VR simulation zones.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Games Section -->
+        <section id="games" class="py-20 md:py-32 bg-light-bg">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-4xl md:text-5xl font-orbitron font-bold mb-12 section-heading" data-aos="fade-up">An Unrivaled Slate of <span class="neon-text">Activities</span></h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- ACTIVITY IMAGE UPDATE -->
+                    <div class="activity-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="slideshow-container racing-slideshow-container mb-4">
+                            <img src="https://i.ibb.co/KxNGvMJP/Gemini-Generated-Image-mloww2mloww2mlow.png" alt="Drone Racing Image 1" class="slide active">
+                            <img src="https://i.ibb.co/M577R6t7/Gemini-Generated-Image-quur7squur7squur.png" alt="Drone Racing Image 2" class="slide">
+                        </div>
+                        <h3>Drone Racing</h3><p>Navigate high-speed, intricate obstacle courses with dynamic LED lighting and vacuum tube tunnels.</p>
+                    </div>
+                    <div class="activity-card" data-aos="fade-up" data-aos-delay="200">
+                        <img src="https://i.ibb.co/W4QKM3rf/Gemini-Generated-Image-p8ljeup8ljeup8lj.png" alt="Drone Football" class="w-full h-48 object-cover rounded-t-lg mb-4">
+                        <h3>Drone Football</h3><p>Engage in a fast-paced, strategic team game where precision flight and teamwork determine the winner.</p>
+                    </div>
+                    <div class="activity-card" data-aos="fade-up" data-aos-delay="300">
+                        <img src="https://i.ibb.co/pjxQT4ns/unnamed.png" alt="Capture the Flag" class="w-full h-48 object-cover rounded-t-lg mb-4">
+                        <h3>Capture the Flag</h3><p>A tactical game of aerial tag, requiring agility and strategic planning to outsmart opponents.</p>
+                    </div>
+                    <div class="activity-card" data-aos="fade-up" data-aos-delay="400">
+                        <img src="https://i.ibb.co/8nts4Ztm/Gemini-Generated-Image-z8os2qz8os2qz8os.png" alt="Drone Lazer Tag" class="w-full h-48 object-cover rounded-t-lg mb-4">
+                        <h3>Drone Lazer Tag</h3><p>An electrifying battle where drones fire laser beams in a complex, futuristic arena.</p>
+                    </div>
+                    <div class="activity-card" data-aos="fade-up" data-aos-delay="500">
+                        <img src="https://i.ibb.co/dsyHdLWb/Gemini-Generated-Image-m9asx8m9asx8m9as.png" alt="VR Drone Simulators" class="w-full h-48 object-cover rounded-t-lg mb-4">
+                        <h3>VR Drone Simulators</h3><p>Learn to fly or compete in hyper-realistic virtual arenas, linked to our global leaderboard.</p>
+                    </div>
+                    <div class="activity-card" data-aos="fade-up" data-aos-delay="600">
+                        <img src="https://i.ibb.co/HLXFC5rf/Gemini-Generated-Image-k65z3k65z3k65z3k.png" alt="STEM Workshops" class="w-full h-48 object-cover rounded-t-lg mb-4">
+                        <h3>STEM Workshops</h3><p>From basic flight to advanced coding, our educational programs cater to all skill levels.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <style>.activity-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; padding: 0; text-align: center; transition: all 0.3s ease; overflow: hidden;} .activity-card .p-6 { padding: 1.5rem; } .activity-card:hover { transform: translateY(-10px); background: rgba(0, 170, 255, 0.1); border-color: var(--primary-blue); } .activity-card h3 { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 1rem; text-shadow: 0 0 5px rgba(255,255,255,0.5); } .activity-card p { color: #ccc; }</style>
+
+        <!-- New Section -->
+        <section id="experience" class="py-20 md:py-32">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl md:text-5xl font-orbitron font-bold text-center mb-12 section-heading" data-aos="fade-up">Experience the Arena</h2>
+                <div class="slideshow-container arena-slideshow-container mb-4 shadow-lg shadow-purple-500/20">
+                    <img src="https://i.ibb.co/fY7nCxV3/Gemini-Generated-Image-phfrurphfrurphfr.png" alt="Experience Image 1" class="slide active">
+                    <img src="https://i.ibb.co/G47J4qt9/jca.png" alt="Experience Image 2" class="slide">
+                </div>
+            </div>
+        </section>
+
+        <!-- Gallery Section -->
+        <section id="gallery" class="py-20 md:py-32">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl md:text-5xl font-orbitron font-bold text-center mb-12 section-heading" data-aos="fade-up">Concept <span class="neon-text">Gallery</span></h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="gallery-item" data-aos="zoom-in" data-aos-delay="100"><img src="https://i.ibb.co/bjKzz3SF/cool-jca.png" alt="cool-jca" class="gallery-img"></div>
+                    <div class="gallery-item" data-aos="zoom-in" data-aos-delay="200"><img src="https://i.ibb.co/HL1FCbL0/Drone-in-Futuristic-Neon-Arena-Copy.png" alt="Drone-in-Futuristic-Neon-Arena-Copy" class="gallery-img"></div>
+                    <div class="gallery-item" data-aos="zoom-in" data-aos-delay="300"><img src="https://i.ibb.co/0jLm5dyV/Futuristic-Drone-Racing-Arena.png" alt="Futuristic-Drone-Racing-Arena" class="gallery-img"></div>
+                    <div class="gallery-item" data-aos="zoom-in" data-aos-delay="400"><img src="https://i.ibb.co/nsj55Z9q/Futuristic-Drone-with-Ejected-Battery.png" alt="Futuristic-Drone-with-Ejected-Battery" class="gallery-img"></div>
+                    <div class="gallery-item" data-aos="zoom-in" data-aos-delay="500"><img src="https://i.ibb.co/s9Qvr4XS/Gemini-Generated-potter.png" alt="Gemini-Generated-potter" class="gallery-img"></div>
+                    <div class="gallery-item" data-aos="zoom-in" data-aos-delay="600"><img src="https://i.ibb.co/pjHK3qfH/JC-Sphere-Drone-in-Lattice-Frame-with-topological-optimization.png" alt="JC-Sphere-Drone-in-Lattice-Frame-with-topological-optimization" class="gallery-img"></div>
+                    <div class="gallery-item" data-aos="zoom-in" data-aos-delay="700"><img src="https://i.ibb.co/84f2D505/JC-SPHERE-Drone-Model-vs-Schematic.png" alt="JC-SPHERE-Drone-Model-vs-Schematic" class="gallery-img"></div>
+                    <div class="gallery-item" data-aos="zoom-in" data-aos-delay="800"><img src="https://i.ibb.co/4gmdg3F2/jcs-ok.png" alt="jcs-ok" class="gallery-img"></div>
+                </div>
+            </div>
+        </section>
+        <div id="image-lightbox" class="lightbox"><span class="close-lightbox">&times;</span><img class="lightbox-content" id="lightbox-img"></div>
+        <style>.gallery-item { overflow: hidden; border-radius: 1rem; cursor: pointer; } .gallery-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; } .gallery-item:hover .gallery-img { transform: scale(1.1); }</style>
+
+        <!-- Footer -->
+        <footer class="py-12 bg-black/50">
+            <div class="container mx-auto px-6 text-center text-gray-500">
+                <p class="text-2xl font-orbitron font-bold text-white mb-4">JC ARENA</p>
+                <p>&copy; 2025 JC ARENA. All Rights Reserved. The Future of Drone Entertainment is Here.</p>
+            </div>
+        </footer>
+    </main>
+    
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 800, once: true, offset: 50 });
+
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+        });
+
+        // Lightbox functionality
+        const lightbox = document.getElementById('image-lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const closeBtn = document.querySelector('.close-lightbox');
+        document.querySelectorAll('.gallery-img').forEach(img => {
+            img.addEventListener('click', () => {
+                lightbox.style.display = 'block';
+                lightboxImg.src = img.src;
+            });
+        });
+        closeBtn.onclick = () => lightbox.style.display = 'none';
+        lightbox.onclick = (e) => {
+            if (e.target === lightbox) {
+                lightbox.style.display = 'none';
+            }
+        };
+
+        // Hero Scroll Transition Logic
+        const heroContent = document.querySelector('.hero-content-overlay');
+        const heroBackground = document.querySelector('.hero-background');
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            const heroWrapper = document.querySelector('.hero-section-wrapper');
+            
+            if (!heroWrapper) return; // FIX: Add a check to ensure the element exists
+
+            const heroHeight = heroWrapper.offsetHeight;
+            
+            const scrollPercent = Math.min(1, scrollY / (heroHeight - window.innerHeight));
+
+            // Define stages of the animation
+            const textFadeEnd = 0.5;
+
+            // Text fade
+            if (heroContent) {
+                if (scrollPercent < textFadeEnd) {
+                    heroContent.style.opacity = 1 - (scrollPercent / textFadeEnd);
+                } else {
+                    heroContent.style.opacity = 0;
+                }
+            }
+            
+            if (header) {
+                if (scrollY > 50) {
+                    header.classList.add('glass-effect');
+                } else {
+                    header.classList.remove('glass-effect');
+                }
+            }
+        });
+
+        // JC Sphere Text-to-Image Transition
+        const sphereVideo = document.getElementById('sphere-video-content');
+        const sphereImage = document.getElementById('sphere-image-content');
+        const sphereContainer = document.querySelector('.sphere-transition-container');
+
+        const sphereObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    window.addEventListener('scroll', handleSphereScroll);
+                } else {
+                    window.removeEventListener('scroll', handleSphereScroll);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        if(sphereContainer) {
+            sphereObserver.observe(sphereContainer);
+        }
+
+        function handleSphereScroll() {
+            if (!sphereContainer) return; // FIX: Add a check
+
+            const rect = sphereContainer.getBoundingClientRect();
+            const sectionTop = rect.top;
+            
+            // SLOWED DOWN TRANSITION
+            const startTransition = window.innerHeight * 0.5; // Start transition when section is halfway up the screen
+            const endTransition = window.innerHeight * 0.1;   // End when it's near the top
+
+            if (sphereImage && sphereVideo) {
+                if (sectionTop < startTransition && sectionTop > endTransition) {
+                    const progress = (startTransition - sectionTop) / (startTransition - endTransition);
+                    sphereVideo.style.opacity = 1 - progress;
+                    sphereImage.style.opacity = progress;
+                } else if (sectionTop >= startTransition) {
+                    sphereVideo.style.opacity = 1;
+                    sphereImage.style.opacity = 0;
+                } else {
+                    sphereVideo.style.opacity = 0;
+                    sphereImage.style.opacity = 1;
+                }
+            }
+        }
+
+        // Arena Slideshow
+        function initializeSlideshow(containerSelector) {
+            const container = document.querySelector(containerSelector);
+            if (!container) return;
+            const slides = container.querySelectorAll('.slide');
+            let currentSlide = 0;
+            if (slides.length > 0) {
+                setInterval(() => {
+                    slides[currentSlide].classList.remove('active');
+                    currentSlide = (currentSlide + 1) % slides.length;
+                    slides[currentSlide].classList.add('active');
+                }, 4000);
+            }
+        }
+        
+        function plusSlides(n, slideshowId) {
+            const container = document.querySelector(`.arena-slideshow-container`);
+            if (!container) return;
+            const slides = container.querySelectorAll('.slide');
+            let slideIndex = Array.from(slides).findIndex(slide => slide.classList.contains('active'));
+            
+            slideIndex += n;
+            
+            if (slideIndex >= slides.length) {slideIndex = 0}
+            if (slideIndex < 0) {slideIndex = slides.length - 1}
+            
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[slideIndex].classList.add('active');
+        }
+
+        initializeSlideshow('.arena-slideshow-container');
+        initializeSlideshow('.racing-slideshow-container');
+        initializeSlideshow('.experience-slideshow-container');
+
+    </script>
+</body>
+</html>
