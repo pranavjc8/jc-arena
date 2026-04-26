@@ -333,7 +333,7 @@
                         <p class="text-lg text-gray-300 mb-6">Experience the unparalleled agility and performance of the JC Sphere, engineered for the ultimate indoor flight experience.</p>
                     </div>
                     <div class="video-container aspect-ratio-16-9" data-aos="fade-left">
-                        <iframe src="https://www.youtube.com/embed/uR_hssDlCDs"
+                        <iframe id="yt-player" src="https://www.youtube.com/embed/uR_hssDlCDs?enablejsapi=1&autoplay=1&mute=1"
                             frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
                         </iframe>
                     </div>
@@ -885,6 +885,24 @@
                     }
                 }
             }
+        }
+    </script>
+    
+    <!-- YouTube IFrame API Logic -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        var player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('yt-player', {
+                events: {
+                    'onReady': onPlayerReady
+                }
+            });
+        }
+        function onPlayerReady(event) {
+            event.target.setVolume(30);
+            event.target.unMute();
+            event.target.playVideo();
         }
     </script>
 </body>
