@@ -344,7 +344,7 @@
                     </div>
                     <div class="video-container aspect-ratio-16-9" data-aos="fade-left">
                         <div class="video-overlay"></div>
-                        <iframe id="yt-player" src="https://www.youtube.com/embed/uR_hssDlCDs?enablejsapi=1&autoplay=1&mute=1&controls=0&modestbranding=1&rel=0"
+                        <iframe id="yt-player" src="https://www.youtube.com/embed/uR_hssDlCDs?enablejsapi=1&controls=0&modestbranding=1&rel=0"
                             frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
                         </iframe>
                     </div>
@@ -903,6 +903,8 @@
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
         var player;
+        var playerReady = false;
+
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('yt-player', {
                 events: {
@@ -910,10 +912,27 @@
                 }
             });
         }
+
         function onPlayerReady(event) {
+            playerReady = true;
             event.target.setVolume(30);
             event.target.unMute();
-            event.target.playVideo();
+            
+            // Set up Intersection Observer once player is ready
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        player.playVideo();
+                    } else {
+                        player.pauseVideo();
+                    }
+                });
+            }, { threshold: 0.3 }); // Play when 30% of the section is visible
+
+            const sphereSection = document.getElementById('jc-sphere');
+            if (sphereSection) {
+                observer.observe(sphereSection);
+            }
         }
     </script>
 </body>
